@@ -4,14 +4,10 @@
  */
 
 class Main {
-
-
     public static void main(String[] args) {
 
-        String map[][] = new String[10][10];
+        MapDatabase map = new MapDatabase(100, 100, 50, 50, 0) ;
 
-        // Initialize Map
-        moveItemsOnGrid(map);
 
         // display the fake grid on Console
         //DisplayGridOnConsole(map);
@@ -26,34 +22,21 @@ class Main {
 
 
             //Small delay
-            try{ Thread.sleep(1000); }catch(Exception e) {};
+            try{ Thread.sleep(20); }catch(Exception e) {};
 
-
-            // Initialize Map (Making changes to map)
-            moveItemsOnGrid(map);
+            map.growGrass();
+            map.moveAll();
 
             //Display the grid on a Panel
             grid.refresh();
         }
     }
 
-
-    // Method to simulate grid movement
-    public static void moveItemsOnGrid(String[][] map) {
-
-        for(int i = 0; i<map[0].length;i++)
-            for(int j = 0; j<map.length;j++)
-            {
-
-                map[i][j]=((int)(Math.random()* 3))+"";
-            }
-    }
-
     //method to display grid a text for debugging
-    public static void DisplayGridOnConsole(String[][] map) {
-        for(int i = 0; i<map.length;i++){
-            for(int j = 0; j<map[0].length;j++)
-                System.out.print(map[i][j]+" ");
+    public static void DisplayGridOnConsole(MapDatabase map) {
+        for(int i = 0; i<map.getMap().length;i++){
+            for(int j = 0; j<map.getMap()[0].length;j++)
+                System.out.print(map.getMap()[i][j]+" ");
             System.out.println("");
         }
     }

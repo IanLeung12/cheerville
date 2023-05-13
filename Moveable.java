@@ -1,15 +1,35 @@
 abstract class Movable extends Tile{
 
     private int sight;
-    private int age;
 
-    Movable(int x, int y, int sight, int age) {
-        super(x, y);
-        this.sight = sight;
-        this.age = age;
+    private int health;
+
+    private boolean moved;
+
+    public boolean isMoved() {
+        return moved;
     }
 
-    abstract void move(Tile[][] sight);
+    public void setMoved(boolean moved) {
+        this.moved = moved;
+    }
+
+    Movable(int x, int y, int sight) {
+        super(x, y);
+        this.sight = sight;
+        this.setAge(0);
+        this.health = 100;
+        this.moved = false;
+    }
+
+    Movable(int x, int y, int sight, int health) {
+        super(x, y);
+        this.sight = sight;
+        this.setAge(0);
+        this.health = 100;
+    }
+
+    abstract public int[] move(Tile[][] sight);
 
     public int getSight() {
         return sight;
@@ -19,11 +39,11 @@ abstract class Movable extends Tile{
         this.sight = sight;
     }
 
-    public int getAge() {
-        return age;
+    public int getHealth() {
+        return health;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setHealth(int health) {
+        this.health = health;
     }
 }

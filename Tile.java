@@ -2,11 +2,18 @@ abstract class Tile {
     private int x;
     private int y;
 
+    private int age;
+
     Tile(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    public abstract String getType();
+
+    public void age() {
+        this.age ++;
+    }
     public int getX() {
         return x;
     }
@@ -21,5 +28,13 @@ abstract class Tile {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }

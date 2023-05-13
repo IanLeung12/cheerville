@@ -16,15 +16,17 @@ import java.awt.event.MouseEvent;
 class MatrixDisplayWithMouse extends JFrame {
 
     int maxX,maxY, GridToScreenRatio;
-    String[][] matrix;
 
-    MatrixDisplayWithMouse(String title, String[][] matrix) {
+    Tile[][] matrix;
+
+    MatrixDisplayWithMouse(String title, MapDatabase map) {
         super(title);
 
-        this.matrix = matrix;
+
+        this.matrix = map.getMap();
         maxX = Toolkit.getDefaultToolkit().getScreenSize().width;
         maxY = Toolkit.getDefaultToolkit().getScreenSize().height;
-        GridToScreenRatio = maxY / (matrix.length+1);  //ratio to fit in screen as square map
+        GridToScreenRatio = maxY / (matrix.length + 1);  //ratio to fit in screen as square map
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -57,9 +59,12 @@ class MatrixDisplayWithMouse extends JFrame {
             for(int i = 0; i<matrix[0].length;i=i+1)  {
                 for(int j = 0; j<matrix.length;j=j+1)  {
 
-                    if (matrix[i][j].equals("1"))    //This block can be changed to match character-color pairs
+                    String type = matrix[i][j].getType();
+                    if (type.equals("empty"))
+                        g.setColor(Color.LIGHT_GRAY);
+                    else if (type.equals("zombie"))    //This block can be changed to match character-color pairs
                         g.setColor(Color.RED);
-                    else if (matrix[i][j].equals("2"))
+                    else if (type.equals("human"))
                         g.setColor(Color.BLUE);
                     else
                         g.setColor(Color.GREEN);

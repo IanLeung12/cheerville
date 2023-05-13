@@ -1,32 +1,54 @@
 import java.util.ArrayList;
 class Zombie extends Movable{
-    Zombie(int x, int y, int sight, int age) {
-        super(x, y, sight, age);
+    Zombie(int x, int y) {
+        super(x, y, 1);
     }
 
-    public void move(Tile[][] sight) {
+    Zombie(int x, int y, int health) {
+        super(x, y, 1, health);
+    }
+
+    public int[] move(Tile[][] sight) {
         int choice;
         ArrayList<ArrayList<Integer>> humans = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < sight.length; i ++) {
             for (int j = 0; j < sight[i].length; j++) {
                 if (sight[i][j] instanceof Human) {
                     humans.add(new ArrayList<Integer>());
-                    humans.get(humans.size() - 1).add(this.getX() - 2 + j);
-                    humans.get(humans.size() - 1).add(this.getY() - 2 + i);
+                    humans.get(humans.size() - 1).add(this.getX() - 1 + j);
+                    humans.get(humans.size() - 1).add(this.getY() - 1 + i);
 
                 }
             }
         }
 
         if (humans.size() == 0) {
-            this.setX(this.getX() - 2 + (int) (Math.random() * sight.length));
-            this.setY(this.getY() - 2 + (int) (Math.random() * sight.length));
+            int x;
+            int y;
+            do {
+                x = (int) (Math.random() * sight.length);
+                y = (int) (Math.random() * sight.length);
+
+            } while ((sight[y][x] == null) || (sight[y][x] instanceof Zombie));
+
+            this.setX(this.getX() + x - 1);
+            this.setY(this.getY() + y - 1);
 
         } else {
             choice = (int) (Math.random() * (humans.size() - 1));
             this.setX(humans.get(choice).get(0));
-            this.setX(humans.get(choice).get(1));
+            this.setY(humans.get(choice).get(1));
         }
+
+        return new int[]{this.getX(), this.getY()};
+    }
+
+    public String getType() {
+        return "zombie";
+    }
+
+    public void age(){
+        this.setHealth(this.getHealth() - 1);
     }
 
 }

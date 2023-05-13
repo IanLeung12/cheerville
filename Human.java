@@ -1,37 +1,47 @@
-class Human extends Movable{
 
-    int hunger;
+class Human extends Movable {
 
-    Human(int x, int y, int sight, int age, int hunger) {
-        super(x, y, sight, age);
-        this.hunger = hunger;
+    private int hunger;
+
+    private String gender;
+
+    Human(int x, int y) {
+        super(x, y, 2);
+        this.hunger = 0;
+        if (Math.random() >= 0.5) {
+            this.gender = "female";
+        } else {
+            this.gender = "male";
+        }
     }
 
-    public void move(Tile[][] sight) {
+    public int[] move(Tile[][] sight) {
         String bestChoice = "empty";
         int bestX = 0;
         int bestY = 0;
         double distance;
         double bestDistance = Integer.MAX_VALUE;
+        int bestPlant = 0;
         for (int i = 0; i < sight.length; i ++) {
-            for (int j = 0; j < sight[i].length; j ++) {
-                distance = Math.sqrt((Math.pow((-2 + j), 2)) + (Math.pow((-2 + i), 2)));
-                if ((sight[i][j] instanceof Grass) && hunger > 5) {
-
-                    if ((distance < bestDistance) && (bestChoice.equals("grass"))) {
-                        bestDistance = distance;
-                        bestX = this.getX() - 2 + j;
-                        bestY = this.getY() - 2 + i;
+            for (int j = 0; j < sight[i].length; j++) {
+                if ((sight[i][j] instanceof Grass) && hunger > 50) {
+                    int plantValue = ((Grass) sight[i][j]).giveHunger();
+                    if (plantValue > bestPlant) {
+                        bestPlant = plantValue;
+                        bestX = j - 2;
+                        bestY = i - 2;
                     }
                     bestChoice = "grass";
 
                 } else if ((sight[i][j] instanceof Human) && ((i != 2) || (j != 2)) && (!bestChoice.equals("grass"))) {
-                    bestChoice = "human";
-
-                    if (distance < bestDistance) {
-                        bestDistance = distance;
-                        bestX = this.getX() - 2 + j;
-                        bestY = this.getY() - 2 + i;
+                    if (!((Human) sight[i][j]).getGender().equals(this.gender)) {
+                        distance = Math.sqrt((Math.pow((-2 + j), 2)) + (Math.pow((-2 + i), 2)));
+                        bestChoice = "human";
+                        if (distance < bestDistance) {
+                            bestDistance = distance;
+                            bestX = j - 2;
+                            bestY = i - 2;
+                        }
                     }
                 }
             }
@@ -39,13 +49,54 @@ class Human extends Movable{
 
         if (bestChoice.equals("empty")) {
             do {
-                bestX = this.getX() - 2 + (int) (Math.random() * sight.length);
-                bestY = this.getY() - 2 + (int) (Math.random() * sight.length);
-            } while (sight[bestY + 2 + this.getY()][bestX + 2 + this.getX()] instanceof Zombie);
+                bestX = (int) (Math.random() * sight.length);
+                bestY = (int) (Math.random() * sight.length);
+
+            } while ((sight[bestY][bestX] instanceof Zombie) || (sight[bestY][bestX] == null));
+        } else if (bestChoice.equals("grass")) {
+            hunger -= bestPlant;
         }
 
-        this.setX(bestX);
-        this.setY(bestY);
+
+
+        if (this.getX() - 2 + bestX > 99 || this.getY() - 2 + bestY > 99 || this.getX() - 2 + bestX < 0 || this.getY() - 2 + bestY < 0) {
+            for (Tile[] row: sight) {
+                for (Tile tile: row) {
+                    try {
+                        System.out.print(tile.getType() + " ");
+                    } catch (Exception e) {
+                        System.out.print("Null ");
+                    }
+
+                }
+                System.out.println();
+            }
+            System.out.println(bestChoice + " " +  this.getX() + " " + this.getY());
+            System.out.println(bestX + " " + bestY);
+            System.out.println((this.getX() + bestX) + " " + (this.getY() + bestY));
+
+        }
+        this.setX(this.getX() + bestX);
+        this.setY(this.getY() + bestY);
+        return new int[]{this.getX(), this.getY()};
+    }
+
+    public void age() {
+        super.age();
+        hunger += 10;
+        if (hunger > 75) {
+            this.setHealth(this.getHealth() - (hunger - 75));
+        }
+
+        /*if (this.getAge() > 12) {
+            this.setHealth(this.getHealth() - (int) (Math.random() * 10));
+        }*/
+
+
+    }
+
+    public String getType() {
+        return "human";
     }
 
     public int getHunger() {
@@ -55,4 +106,13 @@ class Human extends Movable{
     public void setHunger(int hunger) {
         this.hunger = hunger;
     }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
 }
