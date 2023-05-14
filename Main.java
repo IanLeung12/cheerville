@@ -6,7 +6,7 @@
 class Main {
     public static void main(String[] args) {
 
-        MapDatabase map = new MapDatabase(100, 100, 50, 50, 0) ;
+        MapDatabase map = new MapDatabase(100, 100, 100, 100, 0) ;
 
 
         // display the fake grid on Console

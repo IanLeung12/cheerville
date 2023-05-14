@@ -77,6 +77,8 @@ public class MapDatabase {
                                 }
                             }
                         }
+
+                        System.out.println(map[i][j]);
                         int[] changedCoords = ((Movable) map[i][j]).move(sight);
                         int targetX = changedCoords[0];
                         int targetY = changedCoords[1];
@@ -85,12 +87,13 @@ public class MapDatabase {
 
                             if (map[targetY][targetX] instanceof Grass) {
                                 ((Human) map[i][j]).setHunger(((Human) map[i][j]).getHunger() - ((Grass) map[targetY][targetX]).giveHunger());
-                                map[targetY][targetX] = map[i][j];
-                                map[i][j] = new Empty(j, i);
                             }
 
+                            map[targetY][targetX] = map[i][j];
+                            map[i][j] = new Empty(j, i);
+
                         } else if (map[targetY][targetX] instanceof Human) {
-                            zombify(targetX, targetY);
+                            zombify(targetX, targetY, (Zombie) map[i][j]);
 
                         } else {
                             map[targetY][targetX] = map[i][j];
@@ -110,9 +113,12 @@ public class MapDatabase {
 
         resetMoved();
     }
-    public void zombify(int x, int y) {
-        map[y][x] = new Zombie(x, y, ((Movable) map[y][x]).getHealth());
-
+    public void zombify(int x, int y, Zombie zombie) {
+        if (((Human) map[y][x]).getHealth() <= zombie.getHealth()) {
+            map[y][x] = new Empty(x, y);
+        } else {
+            map[y][x] = new Zombie(x, y, ((Movable) map[y][x]).getHealth());
+        }
     }
 
     public Tile[][] getMap() {

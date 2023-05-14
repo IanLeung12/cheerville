@@ -3,7 +3,7 @@ class Human extends Movable {
 
     private int hunger;
 
-    private String gender;
+    private final String gender;
 
     Human(int x, int y) {
         super(x, y, 2);
@@ -22,25 +22,26 @@ class Human extends Movable {
         double distance;
         double bestDistance = Integer.MAX_VALUE;
         int bestPlant = 0;
+        int radius = this.getSight();
         for (int i = 0; i < sight.length; i ++) {
             for (int j = 0; j < sight[i].length; j++) {
                 if ((sight[i][j] instanceof Grass) && hunger > 50) {
                     int plantValue = ((Grass) sight[i][j]).giveHunger();
                     if (plantValue > bestPlant) {
                         bestPlant = plantValue;
-                        bestX = j - 2;
-                        bestY = i - 2;
+                        bestX = j - radius;
+                        bestY = i - radius;
                     }
                     bestChoice = "grass";
 
-                } else if ((sight[i][j] instanceof Human) && ((i != 2) || (j != 2)) && (!bestChoice.equals("grass"))) {
+                } else if ((sight[i][j] instanceof Human) && (!bestChoice.equals("grass"))) {
                     if (!((Human) sight[i][j]).getGender().equals(this.gender)) {
-                        distance = Math.sqrt((Math.pow((-2 + j), 2)) + (Math.pow((-2 + i), 2)));
+                        distance = Math.sqrt((Math.pow((j - radius), 2)) + (Math.pow((i - radius), 2)));
                         bestChoice = "human";
                         if (distance < bestDistance) {
                             bestDistance = distance;
-                            bestX = j - 2;
-                            bestY = i - 2;
+                            bestX = j - radius;
+                            bestY = i - radius;
                         }
                     }
                 }
@@ -48,34 +49,23 @@ class Human extends Movable {
         }
 
         if (bestChoice.equals("empty")) {
+            int counter = 0;
             do {
                 bestX = (int) (Math.random() * sight.length);
                 bestY = (int) (Math.random() * sight.length);
-
+                counter++;
             } while ((sight[bestY][bestX] instanceof Zombie) || (sight[bestY][bestX] == null));
+            System.out.println(sight[bestY][bestX]);
+            bestX -= radius;
+            bestY -= radius;
+
         } else if (bestChoice.equals("grass")) {
             hunger -= bestPlant;
         }
 
 
 
-        if (this.getX() - 2 + bestX > 99 || this.getY() - 2 + bestY > 99 || this.getX() - 2 + bestX < 0 || this.getY() - 2 + bestY < 0) {
-            for (Tile[] row: sight) {
-                for (Tile tile: row) {
-                    try {
-                        System.out.print(tile.getType() + " ");
-                    } catch (Exception e) {
-                        System.out.print("Null ");
-                    }
 
-                }
-                System.out.println();
-            }
-            System.out.println(bestChoice + " " +  this.getX() + " " + this.getY());
-            System.out.println(bestX + " " + bestY);
-            System.out.println((this.getX() + bestX) + " " + (this.getY() + bestY));
-
-        }
         this.setX(this.getX() + bestX);
         this.setY(this.getY() + bestY);
         return new int[]{this.getX(), this.getY()};
@@ -88,9 +78,9 @@ class Human extends Movable {
             this.setHealth(this.getHealth() - (hunger - 75));
         }
 
-        /*if (this.getAge() > 12) {
+        if (this.getAge() > 12) {
             this.setHealth(this.getHealth() - (int) (Math.random() * 10));
-        }*/
+        }
 
 
     }
@@ -111,8 +101,5 @@ class Human extends Movable {
         return gender;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
 }

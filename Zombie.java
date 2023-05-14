@@ -48,7 +48,7 @@ class Zombie extends Movable{
     }
 
     public void age(){
-        this.setHealth(this.getHealth() - 1);
+        this.setHealth(this.getHealth() - 5);
     }
 
 }
