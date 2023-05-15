@@ -1,9 +1,14 @@
+import java.sql.SQLOutput;
 
 class Human extends Movable {
 
     private int hunger;
 
     private final String gender;
+
+    private boolean pregnant = false;
+
+    private int timePregnant = 0;
 
     Human(int x, int y) {
         super(x, y, 2);
@@ -54,32 +59,48 @@ class Human extends Movable {
                 bestX = (int) (Math.random() * sight.length);
                 bestY = (int) (Math.random() * sight.length);
                 counter++;
-            } while ((sight[bestY][bestX] instanceof Zombie) || (sight[bestY][bestX] == null));
-            System.out.println(sight[bestY][bestX]);
-            bestX -= radius;
-            bestY -= radius;
+            } while (!(sight[bestY][bestX] instanceof Empty) && !(sight[bestY][bestX] instanceof Grass) && (counter < 12));
+            if (counter >= 12) {
+                bestX = 0;
+                bestY = 0;
+            } else {
+                bestX -= radius;
+                bestY -= radius;
+            }
 
         } else if (bestChoice.equals("grass")) {
-            hunger -= bestPlant;
+            this.hunger -= bestPlant;
         }
 
 
 
 
-        this.setX(this.getX() + bestX);
-        this.setY(this.getY() + bestY);
-        return new int[]{this.getX(), this.getY()};
+        if (bestChoice.equals("human")) {
+            System.out.println(sight[bestY + radius][bestX + radius]);
+            return new int[] {this.getX() + bestX, this.getY() + bestY};
+        } else {
+            if (sight[bestY + radius][bestX + radius] instanceof Human) {
+                System.out.println("wtf");
+            }
+            this.setX(this.getX() + bestX);
+            this.setY(this.getY() + bestY);
+            return new int[]{this.getX(), this.getY()};
+        }
     }
 
     public void age() {
         super.age();
-        hunger += 10;
-        if (hunger > 75) {
-            this.setHealth(this.getHealth() - (hunger - 75));
+        this.hunger += 10;
+        if (this.hunger > 75) {
+            this.setHealth(this.getHealth() - (this.hunger - 75));
         }
 
-        if (this.getAge() > 12) {
+        if (this.getAge() > 15) {
             this.setHealth(this.getHealth() - (int) (Math.random() * 10));
+        }
+
+        if (pregnant) {
+            this.timePregnant ++;
         }
 
 
@@ -88,6 +109,7 @@ class Human extends Movable {
     public String getType() {
         return "human";
     }
+
 
     public int getHunger() {
         return hunger;
@@ -101,5 +123,19 @@ class Human extends Movable {
         return gender;
     }
 
+    public boolean isPregnant() {
+        return pregnant;
+    }
 
+    public void setPregnant(boolean pregnant) {
+        this.pregnant = pregnant;
+    }
+
+    public int getTimePregnant() {
+        return timePregnant;
+    }
+
+    public void setTimePregnant(int timePregnant) {
+        this.timePregnant = timePregnant;
+    }
 }

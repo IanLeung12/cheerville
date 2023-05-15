@@ -33,14 +33,13 @@ class Zombie extends Movable{
 
             this.setX(this.getX() + x - 1);
             this.setY(this.getY() + y - 1);
+            return new int[]{this.getX(), this.getY()};
 
         } else {
             choice = (int) (Math.random() * (humans.size() - 1));
-            this.setX(humans.get(choice).get(0));
-            this.setY(humans.get(choice).get(1));
+            return new int[] {humans.get(choice).get(0), humans.get(choice).get(1)};
         }
 
-        return new int[]{this.getX(), this.getY()};
     }
 
     public String getType() {

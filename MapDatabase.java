@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class MapDatabase {
     private Tile[][] map;
 
@@ -72,34 +74,37 @@ public class MapDatabase {
                                         sight[y][x] = map[i - sightDistance + y][j - sightDistance + x];
                                     }
                                 } catch (Exception e) {
-                                    System.out.println("IS OUT OF BOUNDS");
                                     sight[y][x] = null;
                                 }
                             }
                         }
 
-                        System.out.println(map[i][j]);
                         int[] changedCoords = ((Movable) map[i][j]).move(sight);
                         int targetX = changedCoords[0];
                         int targetY = changedCoords[1];
 
-                        if (map[i][j] instanceof Human) {
+                        if ((targetX != j) || (targetY != i)){
+                            if (map[i][j] instanceof Human) {
 
-                            if (map[targetY][targetX] instanceof Grass) {
-                                ((Human) map[i][j]).setHunger(((Human) map[i][j]).getHunger() - ((Grass) map[targetY][targetX]).giveHunger());
+                                if (map[targetY][targetX] instanceof Human) {
+                                    breed((Human) map[targetY][targetX], (Human) map[i][j]);
+                                } else {
+                                    map[targetY][targetX] = map[i][j];
+                                    map[i][j] = new Empty(j, i);
+                                    if (((Human) map[targetY][targetX]).getTimePregnant() >= 2) {
+                                        birth((Human) (map[targetY][targetX]));
+                                    }
+                                }
+
+                            } else if (map[targetY][targetX] instanceof Human) {
+                                zombify(targetX, targetY, (Zombie) map[i][j]);
+
+                            } else {
+                                map[targetY][targetX] = map[i][j];
+                                map[i][j] = new Empty(j, i);
                             }
 
-                            map[targetY][targetX] = map[i][j];
-                            map[i][j] = new Empty(j, i);
-
-                        } else if (map[targetY][targetX] instanceof Human) {
-                            zombify(targetX, targetY, (Zombie) map[i][j]);
-
-                        } else {
-                            map[targetY][targetX] = map[i][j];
-                            map[i][j] = new Empty(j, i);
                         }
-
 
 
                     }
@@ -113,8 +118,47 @@ public class MapDatabase {
 
         resetMoved();
     }
+
+    public void breed(Human person1, Human person2) {
+        Human female;
+        if (person1.getGender().equals("female")) {
+            female = person1;
+        } else {
+            female = person2;
+        }
+
+        female.setPregnant(true);
+
+
+    }
+
+    public void birth(Human mother) {
+        ArrayList<Tile> babySpots = new ArrayList<Tile>();
+
+        for (int i = mother.getY() - 1; i <= mother.getY() + 1; i ++) {
+            for (int j = mother.getX() - 1; j <= mother.getX() + 1; j ++) {
+                try {
+                    if ((map[i][j] instanceof Empty) || (map[i][j] instanceof Grass)) {
+                        babySpots.add(map[i][j]);
+                    }
+                } catch (Exception e) {
+
+                }
+
+            }
+        }
+
+        if (babySpots.size() > 0) {
+            Tile spot = babySpots.get((int) (Math.random() * babySpots.size()));
+            map[spot.getY()][spot.getX()] = new Human(spot.getX(), spot.getY());
+            mother.setPregnant(false);
+            mother.setTimePregnant(0);
+        }
+    }
+
     public void zombify(int x, int y, Zombie zombie) {
         if (((Human) map[y][x]).getHealth() <= zombie.getHealth()) {
+            zombie.setHealth(zombie.getHealth() + ((Human) map[y][x]).getHealth());
             map[y][x] = new Empty(x, y);
         } else {
             map[y][x] = new Zombie(x, y, ((Movable) map[y][x]).getHealth());

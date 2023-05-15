@@ -6,7 +6,7 @@
 class Main {
     public static void main(String[] args) {
 
-        MapDatabase map = new MapDatabase(100, 100, 100, 100, 0) ;
+        MapDatabase map = new MapDatabase(100, 100, 100, 1, 0) ;
 
 
         // display the fake grid on Console
@@ -22,7 +22,7 @@ class Main {
 
 
             //Small delay
-            try{ Thread.sleep(20); }catch(Exception e) {};
+            try{ Thread.sleep(100); }catch(Exception e) {};
 
             map.growGrass();
             map.moveAll();
