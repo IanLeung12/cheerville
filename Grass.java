@@ -8,7 +8,7 @@ class Grass extends Tile {
     Grass(int x, int y) {
         super(x, y);
         this.setAge(0);
-        this.maxAge = (int) (Math.random() * 5 + 7);
+        this.maxAge = (int) (Math.random() * 6 + 7);
     }
 
     public String getType() {
@@ -16,7 +16,7 @@ class Grass extends Tile {
     }
 
     public int giveHunger() {
-        return (int) (-1.5 * this.getAge() * (this.getAge() - maxAge));
+        return (int) (-1.2 * this.getAge() * (this.getAge() - maxAge)) + 5;
     }
 
 }

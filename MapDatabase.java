@@ -3,8 +3,15 @@ import java.util.ArrayList;
 public class MapDatabase {
     private Tile[][] map;
 
-    MapDatabase(int length, int width, int humans, int zombies, int grass) {
-        this.map = new Tile[length][width];
+    private final double grassGrowRate;
+
+    boolean rapid;
+    MapDatabase(int sidelength, int humans, int zombies, double grassGrowRate, boolean rapid) {
+        this.map = new Tile[sidelength][sidelength];
+
+        this.rapid = rapid;
+
+        this.grassGrowRate = grassGrowRate;
 
         for (int i = 0; i < map.length; i ++) {
             for (int j = 0; j < map[i].length; j ++) {
@@ -13,27 +20,19 @@ public class MapDatabase {
         }
         int x;
         int y;
-        do {
-           x = (int) (Math.random() * (width));
-           y = (int) (Math.random() * (length));
-           if (map[y][x] instanceof Empty) {
-               map[y][x] = new Grass(x, y);
-               grass --;
-           }
-        } while (grass > 0);
 
         do {
-            x = (int) (Math.random() * (width));
-            y = (int) (Math.random() * (length));
+            x = (int) (Math.random() * (sidelength));
+            y = (int) (Math.random() * (sidelength));
             if (map[y][x] instanceof Empty) {
-                map[y][x] = new Human(x, y);
+                map[y][x] = new Human(x, y, rapid);
                 humans --;
             }
         } while (humans > 0);
 
         do {
-            x = (int) (Math.random() * (width));
-            y = (int) (Math.random() * (length));
+            x = (int) (Math.random() * (sidelength));
+            y = (int) (Math.random() * (sidelength));
             if (map[y][x] instanceof Empty) {
                 map[y][x] = new Zombie(x, y);
                 zombies --;
@@ -45,7 +44,7 @@ public class MapDatabase {
         for (int i = 0; i < map.length; i ++) {
             for (int j = 0; j < map.length; j ++) {
                 if (map[i][j] instanceof Empty) {
-                    if (Math.random() < 0.1) {
+                    if (Math.random() <= grassGrowRate) {
                         map[i][j] = new Grass(j, i);
                     }
                 }
@@ -137,20 +136,17 @@ public class MapDatabase {
 
         for (int i = mother.getY() - 1; i <= mother.getY() + 1; i ++) {
             for (int j = mother.getX() - 1; j <= mother.getX() + 1; j ++) {
-                try {
+                if ((i < map.length) && (i > 0) && (j < map[0].length) && (j > 0)) {
                     if ((map[i][j] instanceof Empty) || (map[i][j] instanceof Grass)) {
                         babySpots.add(map[i][j]);
                     }
-                } catch (Exception e) {
-
                 }
-
             }
         }
 
         if (babySpots.size() > 0) {
             Tile spot = babySpots.get((int) (Math.random() * babySpots.size()));
-            map[spot.getY()][spot.getX()] = new Human(spot.getX(), spot.getY());
+            map[spot.getY()][spot.getX()] = new Human(spot.getX(), spot.getY(), rapid);
             mother.setPregnant(false);
             mother.setTimePregnant(0);
         }
@@ -158,8 +154,11 @@ public class MapDatabase {
 
     public void zombify(int x, int y, Zombie zombie) {
         if (((Human) map[y][x]).getHealth() <= zombie.getHealth()) {
-            zombie.setHealth(zombie.getHealth() + ((Human) map[y][x]).getHealth());
+            if (zombie.getHealth() < 100) {
+                zombie.setHealth(zombie.getHealth() + ((Human) map[y][x]).getHealth());
+            }
             map[y][x] = new Empty(x, y);
+
         } else {
             map[y][x] = new Zombie(x, y, ((Movable) map[y][x]).getHealth());
         }

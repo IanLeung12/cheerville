@@ -25,12 +25,17 @@ class Zombie extends Movable{
         if (humans.size() == 0) {
             int x;
             int y;
+            int counter = 0;
             do {
                 x = (int) (Math.random() * sight.length);
                 y = (int) (Math.random() * sight.length);
+                counter ++;
+            } while (((sight[y][x] == null) || (sight[y][x] instanceof Zombie)) && (counter < 12));
 
-            } while ((sight[y][x] == null) || (sight[y][x] instanceof Zombie));
-
+            if (counter >= 12) {
+                x = 1;
+                y = 1;
+            }
             this.setX(this.getX() + x - 1);
             this.setY(this.getY() + y - 1);
             return new int[]{this.getX(), this.getY()};

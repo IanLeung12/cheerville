@@ -3,17 +3,46 @@
  * @author Mangat
  */
 
+import java.sql.SQLOutput;
+import java.util.Scanner;
+
 class Main {
     public static void main(String[] args) {
 
-        MapDatabase map = new MapDatabase(100, 100, 100, 1, 0) ;
+        Scanner input = new Scanner(System.in);
 
+        System.out.println("Enter the side length of the grid (Recommended 75 - 200): ");
+        int sidelength = input.nextInt();
 
-        // display the fake grid on Console
-        //DisplayGridOnConsole(map);
+        System.out.println("Enter the amount of humans (Recommended = side length * 3): ");
+        int humans = input.nextInt();
 
-        //Set up Grid Panel
-        // DisplayGrid grid = new DisplayGrid(map);
+        System.out.println("Enter the amount of zombies (Recommended = humans/2): ");
+        int zombies = input.nextInt();
+
+        System.out.println("Enter the grass grow rate in percentage (Recommended 3% - 7%): " );
+        double grassGrowRate = input.nextDouble() / 100.0;
+
+        System.out.println("Enter the the tick length of the program (Recommended 30ms - 100ms): ");
+        int delay = input.nextInt();
+
+        System.out.println("Rapid reproduction mode? (Age and hunger does not matter - y/n): ");
+        boolean rapid;
+        if (input.next().equals("y")) {
+            rapid = true;
+        } else {
+            rapid = false;
+        }
+        System.out.println("Starting in 3..");
+        try{ Thread.sleep(1000); }catch(Exception e) {}
+        System.out.println("2..");
+        try{ Thread.sleep(1000); }catch(Exception e) {}
+        System.out.println("1..");
+        try{ Thread.sleep(1000); }catch(Exception e) {}
+        System.out.println("0");
+
+        MapDatabase map = new MapDatabase(sidelength, humans, zombies, grassGrowRate, rapid) ;
+
         MatrixDisplayWithMouse grid = new MatrixDisplayWithMouse("title", map);
 
         while(true) {
@@ -22,14 +51,19 @@ class Main {
 
 
             //Small delay
-            try{ Thread.sleep(100); }catch(Exception e) {};
+            try{ Thread.sleep(delay); }catch(Exception e) {};
 
             map.growGrass();
             map.moveAll();
 
             //Display the grid on a Panel
             grid.refresh();
+            if (zombies == -2000) {
+                break;
+            }
         }
+
+        input.close();
     }
 
     //method to display grid a text for debugging
@@ -40,4 +74,5 @@ class Main {
             System.out.println("");
         }
     }
+
 }

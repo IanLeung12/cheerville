@@ -56,16 +56,20 @@ class MatrixDisplayWithMouse extends JFrame {
             g.drawOval(50, 50, 50, 50);
 
 
-            for(int i = 0; i<matrix[0].length;i=i+1)  {
-                for(int j = 0; j<matrix.length;j=j+1)  {
+            for(int i = 0; i < matrix.length; i ++)  {
+                for(int j = 0; j < matrix[i].length; j ++)  {
+                    Tile spot = matrix[i][j];
 
-                    String type = matrix[i][j].getType();
-                    if (type.equals("empty"))
+                    if (spot instanceof Empty)
                         g.setColor(Color.LIGHT_GRAY);
-                    else if (type.equals("zombie"))    //This block can be changed to match character-color pairs
+                    else if (spot instanceof Zombie)    //This block can be changed to match character-color pairs
                         g.setColor(Color.RED);
-                    else if (type.equals("human"))
-                        g.setColor(Color.BLUE);
+                    else if (spot instanceof Human)
+                        if (spot.getAge() > 4) {
+                            g.setColor(Color.BLUE);
+                        } else {
+                            g.setColor(Color.YELLOW);
+                        }
                     else
                         g.setColor(Color.GREEN);
 

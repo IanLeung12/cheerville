@@ -10,7 +10,9 @@ class Human extends Movable {
 
     private int timePregnant = 0;
 
-    Human(int x, int y) {
+    boolean rapid;
+
+    Human(int x, int y, boolean rapid) {
         super(x, y, 2);
         this.hunger = 0;
         if (Math.random() >= 0.5) {
@@ -18,6 +20,7 @@ class Human extends Movable {
         } else {
             this.gender = "male";
         }
+        this.rapid = rapid;
     }
 
     public int[] move(Tile[][] sight) {
@@ -40,7 +43,7 @@ class Human extends Movable {
                     bestChoice = "grass";
 
                 } else if ((sight[i][j] instanceof Human) && (!bestChoice.equals("grass"))) {
-                    if (!((Human) sight[i][j]).getGender().equals(this.gender)) {
+                    if (getConsent((Human) (sight[i][j]))) {
                         distance = Math.sqrt((Math.pow((j - radius), 2)) + (Math.pow((i - radius), 2)));
                         bestChoice = "human";
                         if (distance < bestDistance) {
@@ -76,12 +79,8 @@ class Human extends Movable {
 
 
         if (bestChoice.equals("human")) {
-            System.out.println(sight[bestY + radius][bestX + radius]);
             return new int[] {this.getX() + bestX, this.getY() + bestY};
         } else {
-            if (sight[bestY + radius][bestX + radius] instanceof Human) {
-                System.out.println("wtf");
-            }
             this.setX(this.getX() + bestX);
             this.setY(this.getY() + bestY);
             return new int[]{this.getX(), this.getY()};
@@ -104,6 +103,10 @@ class Human extends Movable {
         }
 
 
+    }
+
+    public boolean getConsent(Human partner) {
+        return (!(partner.getGender().equals(this.gender) && ((rapid) || (this.getAge() > 4)) && (partner.getAge() > 4) && !(this.pregnant) && !(partner.isPregnant()) && (partner.getHunger() <= 50)));
     }
 
     public String getType() {
