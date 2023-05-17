@@ -109,10 +109,6 @@ class Human extends Movable {
         return (!(partner.getGender().equals(this.gender) && ((rapid) || (this.getAge() > 4)) && (partner.getAge() > 4) && !(this.pregnant) && !(partner.isPregnant()) && (partner.getHunger() <= 50)));
     }
 
-    public String getType() {
-        return "human";
-    }
-
 
     public int getHunger() {
         return hunger;

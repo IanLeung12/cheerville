@@ -45,6 +45,7 @@ class Main {
 
         MatrixDisplayWithMouse grid = new MatrixDisplayWithMouse("title", map);
 
+        int counter = 0;
         while(true) {
             //Display the grid on a Panel
             grid.refresh();
@@ -53,11 +54,17 @@ class Main {
             //Small delay
             try{ Thread.sleep(delay); }catch(Exception e) {};
 
+            if (counter > 120) {
+                counter = 0;
+                map.makeNuke(50, 50, 25);
+            }
             map.growGrass();
             map.moveAll();
 
             //Display the grid on a Panel
             grid.refresh();
+
+            counter ++;
             if (zombies == -2000) {
                 break;
             }

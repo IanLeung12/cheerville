@@ -111,6 +111,10 @@ public class MapDatabase {
                     if (map[i][j].getAge() > ((Grass) map[i][j]).getMaxAge()) {
                         map[i][j] = new Empty(j, i);
                     }
+                } else if (map[i][j] instanceof Nuke) {
+                    if (map[i][j].getAge() > ((Nuke) map[i][j]).getMaxAge()) {
+                        map[i][j] = new Empty(j, i);
+                    }
                 }
             }
         }
@@ -164,6 +168,25 @@ public class MapDatabase {
         }
     }
 
+    public void makeNuke(int x, int y, double radius) {
+        int intRadius = (int) Math.ceil(radius);
+        for (int i = y - intRadius; i < y + intRadius; i ++) {
+            for (int j = x - intRadius; j < y + intRadius; j ++) {
+                double distance = Math.sqrt((Math.pow((j - x), 2) + (Math.pow((i - y), 2))));
+                if (distance <= radius) {
+                    int maxAge = (int) (50/ (radius/(radius - distance + 1)) + 5);
+                    System.out.print(maxAge + " ");
+                    map[i][j] = new Nuke(j, i, maxAge);
+                } else {
+                    System.out.print("  ");
+                }
+            }
+
+            System.out.println();
+        }
+        System.out.println();
+
+    }
     public Tile[][] getMap() {
         return map;
     }

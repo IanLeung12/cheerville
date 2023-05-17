@@ -30,7 +30,7 @@ class Zombie extends Movable{
                 x = (int) (Math.random() * sight.length);
                 y = (int) (Math.random() * sight.length);
                 counter ++;
-            } while (((sight[y][x] == null) || (sight[y][x] instanceof Zombie)) && (counter < 12));
+            } while (!(sight[y][x] instanceof Empty) && !(sight[y][x] instanceof Grass) && (counter < 12));
 
             if (counter >= 12) {
                 x = 1;

@@ -9,8 +9,6 @@ abstract class Tile {
         this.y = y;
     }
 
-    public abstract String getType();
-
     public void age() {
         this.age ++;
     }

@@ -70,6 +70,8 @@ class MatrixDisplayWithMouse extends JFrame {
                         } else {
                             g.setColor(Color.YELLOW);
                         }
+                    else if (spot instanceof Nuke)
+                        g.setColor(((Nuke) spot).getColor());
                     else
                         g.setColor(Color.GREEN);
 
