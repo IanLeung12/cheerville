@@ -12,7 +12,7 @@ class Human extends Movable {
 
     boolean rapid;
 
-    Human(int x, int y, boolean rapid) {
+    Human(int x, int y) {
         super(x, y, 2);
         this.hunger = 0;
         if (Math.random() >= 0.5) {

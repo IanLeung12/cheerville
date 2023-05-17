@@ -17,16 +17,19 @@ class MatrixDisplayWithMouse extends JFrame {
 
     int maxX,maxY, GridToScreenRatio;
 
-    Tile[][] matrix;
+    MapDatabase map;
 
+    Tile[][] matrix;
     MatrixDisplayWithMouse(String title, MapDatabase map) {
         super(title);
 
-
+        this.map = map;
         this.matrix = map.getMap();
         maxX = Toolkit.getDefaultToolkit().getScreenSize().width;
         maxY = Toolkit.getDefaultToolkit().getScreenSize().height;
         GridToScreenRatio = maxY / (matrix.length + 1);  //ratio to fit in screen as square map
+
+        System.out.println(GridToScreenRatio);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -92,6 +95,8 @@ class MatrixDisplayWithMouse extends JFrame {
         public void mousePressed(MouseEvent e) {
             System.out.println("Mouse pressed; # of clicks: " + e.getClickCount());
             System.out.println("x: " + e.getPoint().x + ",y: " + e.getPoint().y);
+            map.makeNuke((e.getPoint().x / GridToScreenRatio), (e.getPoint().y / GridToScreenRatio));
+
         }
 
         public void mouseReleased(MouseEvent e) {

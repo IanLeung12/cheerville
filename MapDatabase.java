@@ -5,11 +5,11 @@ public class MapDatabase {
 
     private final double grassGrowRate;
 
-    boolean rapid;
-    MapDatabase(int sidelength, int humans, int zombies, double grassGrowRate, boolean rapid) {
-        this.map = new Tile[sidelength][sidelength];
+    private double radius;
+    MapDatabase(int sideLength, int humans, int zombies, double grassGrowRate, double radius) {
 
-        this.rapid = rapid;
+        this.radius = radius;
+        this.map = new Tile[sideLength][sideLength];
 
         this.grassGrowRate = grassGrowRate;
 
@@ -22,17 +22,17 @@ public class MapDatabase {
         int y;
 
         do {
-            x = (int) (Math.random() * (sidelength));
-            y = (int) (Math.random() * (sidelength));
+            x = (int) (Math.random() * (sideLength));
+            y = (int) (Math.random() * (sideLength));
             if (map[y][x] instanceof Empty) {
-                map[y][x] = new Human(x, y, rapid);
+                map[y][x] = new Human(x, y);
                 humans --;
             }
         } while (humans > 0);
 
         do {
-            x = (int) (Math.random() * (sidelength));
-            y = (int) (Math.random() * (sidelength));
+            x = (int) (Math.random() * (sideLength));
+            y = (int) (Math.random() * (sideLength));
             if (map[y][x] instanceof Empty) {
                 map[y][x] = new Zombie(x, y);
                 zombies --;
@@ -140,7 +140,7 @@ public class MapDatabase {
 
         for (int i = mother.getY() - 1; i <= mother.getY() + 1; i ++) {
             for (int j = mother.getX() - 1; j <= mother.getX() + 1; j ++) {
-                if ((i < map.length) && (i > 0) && (j < map[0].length) && (j > 0)) {
+                if (inBounds(j, i)) {
                     if ((map[i][j] instanceof Empty) || (map[i][j] instanceof Grass)) {
                         babySpots.add(map[i][j]);
                     }
@@ -150,7 +150,7 @@ public class MapDatabase {
 
         if (babySpots.size() > 0) {
             Tile spot = babySpots.get((int) (Math.random() * babySpots.size()));
-            map[spot.getY()][spot.getX()] = new Human(spot.getX(), spot.getY(), rapid);
+            map[spot.getY()][spot.getX()] = new Human(spot.getX(), spot.getY());
             mother.setPregnant(false);
             mother.setTimePregnant(0);
         }
@@ -168,25 +168,26 @@ public class MapDatabase {
         }
     }
 
-    public void makeNuke(int x, int y, double radius) {
+    public void makeNuke(int x, int y) {
         int intRadius = (int) Math.ceil(radius);
         for (int i = y - intRadius; i < y + intRadius; i ++) {
-            for (int j = x - intRadius; j < y + intRadius; j ++) {
-                double distance = Math.sqrt((Math.pow((j - x), 2) + (Math.pow((i - y), 2))));
-                if (distance <= radius) {
-                    int maxAge = (int) (50/ (radius/(radius - distance + 1)) + 5);
-                    System.out.print(maxAge + " ");
-                    map[i][j] = new Nuke(j, i, maxAge);
-                } else {
-                    System.out.print("  ");
+            for (int j = x - intRadius; j < x + intRadius; j ++) {
+                if (inBounds(j, i)) {
+                    double distance = Math.sqrt((Math.pow((j - x), 2) + (Math.pow((i - y), 2))));
+                    if (distance <= radius) {
+                        int maxAge = (int) ((radius * 1.25 + 5) / (radius / (radius - distance + 1)) + 3);
+                        map[i][j] = new Nuke(j, i, maxAge);
+                    }
                 }
             }
 
-            System.out.println();
         }
-        System.out.println();
-
     }
+
+    public boolean inBounds(int x, int y) {
+        return ((y < map.length) && (y >= 0) && (x < map[0].length) && (x >= 0));
+    }
+
     public Tile[][] getMap() {
         return map;
     }

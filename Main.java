@@ -12,40 +12,35 @@ class Main {
         Scanner input = new Scanner(System.in);
 
         System.out.println("Enter the side length of the grid (Recommended 75 - 200): ");
+        MapDatabase map;
+
         int sidelength = input.nextInt();
+        int delay = 25;
+        if (sidelength == -1) {
+            map = new MapDatabase(250, 750, 375, 0.05, 50) ;
+        } else{
+            System.out.println("Enter the amount of humans (Recommended = side length * 3): ");
+            int humans = input.nextInt();
 
-        System.out.println("Enter the amount of humans (Recommended = side length * 3): ");
-        int humans = input.nextInt();
+            System.out.println("Enter the amount of zombies (Recommended = humans/2): ");
+            int zombies = input.nextInt();
 
-        System.out.println("Enter the amount of zombies (Recommended = humans/2): ");
-        int zombies = input.nextInt();
+            System.out.println("Enter the grass grow rate in percentage (Recommended 3% - 7%): " );
+            double grassGrowRate = input.nextDouble() / 100.0;
 
-        System.out.println("Enter the grass grow rate in percentage (Recommended 3% - 7%): " );
-        double grassGrowRate = input.nextDouble() / 100.0;
+            System.out.println("Enter the the tick length of the program (Recommended 30ms - 100ms): ");
+            delay = input.nextInt();
 
-        System.out.println("Enter the the tick length of the program (Recommended 30ms - 100ms): ");
-        int delay = input.nextInt();
+            System.out.println("Enter the nuke radius (Recommended = side length/4): ");
+            double radius = input.nextInt() + 0.5;
 
-        System.out.println("Rapid reproduction mode? (Age and hunger does not matter - y/n): ");
-        boolean rapid;
-        if (input.next().equals("y")) {
-            rapid = true;
-        } else {
-            rapid = false;
+
+
+            map = new MapDatabase(sidelength, humans, zombies, grassGrowRate, radius) ;
         }
-        System.out.println("Starting in 3..");
-        try{ Thread.sleep(1000); }catch(Exception e) {}
-        System.out.println("2..");
-        try{ Thread.sleep(1000); }catch(Exception e) {}
-        System.out.println("1..");
-        try{ Thread.sleep(1000); }catch(Exception e) {}
-        System.out.println("0");
-
-        MapDatabase map = new MapDatabase(sidelength, humans, zombies, grassGrowRate, rapid) ;
 
         MatrixDisplayWithMouse grid = new MatrixDisplayWithMouse("title", map);
 
-        int counter = 0;
         while(true) {
             //Display the grid on a Panel
             grid.refresh();
@@ -54,18 +49,14 @@ class Main {
             //Small delay
             try{ Thread.sleep(delay); }catch(Exception e) {};
 
-            if (counter > 120) {
-                counter = 0;
-                map.makeNuke(50, 50, 25);
-            }
             map.growGrass();
             map.moveAll();
 
             //Display the grid on a Panel
             grid.refresh();
 
-            counter ++;
-            if (zombies == -2000) {
+
+            if (delay == -2000) {
                 break;
             }
         }

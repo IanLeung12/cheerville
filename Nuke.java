@@ -15,7 +15,7 @@ public class Nuke extends Tile{
     }
 
     public Color getColor() {
-        float h = 0.03f + 0.15f * ((float) this.getAge() / maxAge);
+        float h = 0.01f + 0.15f * ((float) this.getAge() / maxAge);
         return Color.getHSBColor(h, 0.75f, 0.75f);
     }
 }
