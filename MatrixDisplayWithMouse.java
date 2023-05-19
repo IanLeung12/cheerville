@@ -1,8 +1,6 @@
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.awt.Toolkit;
-import java.awt.Graphics;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
@@ -23,6 +21,7 @@ class MatrixDisplayWithMouse extends JFrame {
     MapDatabase map;
 
     Tile[][] matrix;
+
     MatrixDisplayWithMouse(String title, MapDatabase map) {
         super(title);
 
@@ -61,7 +60,9 @@ class MatrixDisplayWithMouse extends JFrame {
             g.setColor(Color.BLACK);
             g.drawOval(50, 50, 50, 50);
 
-            g.drawString("Humans", 1400, 300);
+            g.setFont(new Font("Georgia", Font.PLAIN, 72));
+            g.drawString("Humans: " + map.getTotalHumans(), 1200, 300);
+            g.drawString("Zombies: " + map.getTotalZombies(), 1200, 450);
 
 
             for(int i = 0; i < matrix.length; i ++)  {

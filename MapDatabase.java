@@ -9,6 +9,10 @@ public class MapDatabase {
 
     private ArrayList<ArrayList<Integer>> nukeQueue;
 
+    private int totalHumans;
+
+    private int totalZombies;
+
     MapDatabase(int sideLength, int humans, int zombies, double grassGrowRate, double radius) {
 
         this.radius = radius;
@@ -176,6 +180,20 @@ public class MapDatabase {
         }
     }
 
+    public void countMovables() {
+        this.totalHumans = 0;
+        this.totalZombies = 0;
+        for (Tile[] row: map) {
+            for (Tile spot: row) {
+                if (spot instanceof Human) {
+                    this.totalHumans ++;
+                } else if (spot instanceof Zombie) {
+                    this.totalZombies ++;
+                }
+            }
+        }
+    }
+
     public void makeNuke(int x, int y) {
         int intRadius = (int) Math.ceil(radius);
         for (int i = y - intRadius; i < y + intRadius; i ++) {
@@ -200,16 +218,16 @@ public class MapDatabase {
         return map;
     }
 
-    public void setMap(Tile[][] map) {
-        this.map = map;
-    }
-
     public ArrayList<ArrayList<Integer>> getNukeQueue() {
         return nukeQueue;
     }
 
-    public void setNukeQueue(ArrayList<ArrayList<Integer>> nukeQueue) {
-        this.nukeQueue = nukeQueue;
+    public int getTotalHumans() {
+        return totalHumans;
+    }
+
+    public int getTotalZombies() {
+        return totalZombies;
     }
 
     public void resetMoved() {
