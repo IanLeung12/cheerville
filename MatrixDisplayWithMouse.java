@@ -36,6 +36,9 @@ class MatrixDisplayWithMouse extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 
+        addMouseListener(new MatrixPanelMouseListener());
+        addKeyListener(new MatrixPanelKeyListener());
+
         this.add(new MatrixPanel());
 
         this.setVisible(true);
@@ -49,8 +52,6 @@ class MatrixDisplayWithMouse extends JFrame {
     class MatrixPanel extends JPanel {
 
         MatrixPanel() {
-
-            addMouseListener(new MatrixPanelMouseListener());
         }
 
         public void paintComponent(Graphics g) {
@@ -63,6 +64,7 @@ class MatrixDisplayWithMouse extends JFrame {
             g.setFont(new Font("Georgia", Font.PLAIN, 72));
             g.drawString("Humans: " + map.getTotalHumans(), 1200, 300);
             g.drawString("Zombies: " + map.getTotalZombies(), 1200, 450);
+            g.drawString(map.getCurrentEvent(), 1200, 600);
 
 
             for(int i = 0; i < matrix.length; i ++)  {
@@ -104,9 +106,9 @@ class MatrixDisplayWithMouse extends JFrame {
         public void mousePressed(MouseEvent e) {
             System.out.println("Mouse pressed; # of clicks: " + e.getClickCount());
             System.out.println("x: " + e.getPoint().x + ",y: " + e.getPoint().y);
-            map.getNukeQueue().add(new ArrayList<Integer>());
-            map.getNukeQueue().get(map.getNukeQueue().size() - 1).add((e.getPoint().x / GridToScreenRatio));
-            map.getNukeQueue().get(map.getNukeQueue().size() - 1).add((e.getPoint().y / GridToScreenRatio));
+            map.getEventQueue().add(new ArrayList<Integer>());
+            map.getEventQueue().get(map.getEventQueue().size() - 1).add((e.getPoint().x / GridToScreenRatio));
+            map.getEventQueue().get(map.getEventQueue().size() - 1).add((e.getPoint().y / GridToScreenRatio));
 
         }
 
@@ -130,19 +132,21 @@ class MatrixDisplayWithMouse extends JFrame {
 
     class MatrixPanelKeyListener implements KeyListener {
 
-        @Override
         public void keyTyped(KeyEvent e) {
-
+            System.out.println("yes");
+            if (e.getKeyChar() == ' ') {
+                map.changeEvent();
+            }
         }
 
-        @Override
         public void keyPressed(KeyEvent e) {
 
+            System.out.println("2");
         }
 
-        @Override
         public void keyReleased(KeyEvent e) {
 
+            System.out.println("3");
         }
     }
 

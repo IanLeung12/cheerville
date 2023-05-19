@@ -7,7 +7,9 @@ public class MapDatabase {
 
     private final double radius;
 
-    private ArrayList<ArrayList<Integer>> nukeQueue;
+    private String currentEvent;
+
+    private ArrayList<ArrayList<Integer>> eventQueue;
 
     private int totalHumans;
 
@@ -17,8 +19,9 @@ public class MapDatabase {
 
         this.radius = radius;
         this.map = new Tile[sideLength][sideLength];
-        this.nukeQueue = new ArrayList<ArrayList<Integer>>();
+        this.eventQueue = new ArrayList<ArrayList<Integer>>();
         this.grassGrowRate = grassGrowRate;
+        this.currentEvent = "Nuke";
 
         for (int i = 0; i < map.length; i ++) {
             for (int j = 0; j < map[i].length; j ++) {
@@ -67,7 +70,7 @@ public class MapDatabase {
                 if (map[i][j] instanceof Movable) {
                     if (((Movable) map[i][j]).getHealth() <= 0) {
                         map[i][j] = new Ground(j, i);
-                    } else if (!((Movable) map[i][j]).isMoved()){
+                    } else if (!((Movable) map[i][j]).isMoved()) {
                         ((Movable) map[i][j]).setMoved(true);
                         int sightDistance = ((Movable) map[i][j]).getSight();
                         Tile[][] sight = new Tile[sightDistance * 2 + 1][sightDistance * 2 + 1];
@@ -89,7 +92,7 @@ public class MapDatabase {
                         int targetX = changedCoords[0];
                         int targetY = changedCoords[1];
 
-                        if ((targetX != j) || (targetY != i)){
+                        if ((targetX != j) || (targetY != i)) {
                             if (map[i][j] instanceof Human) {
 
                                 if (map[targetY][targetX] instanceof Human) {
@@ -125,12 +128,6 @@ public class MapDatabase {
                 }
             }
         }
-
-        for (int i = 0; i < nukeQueue.size(); i ++) {
-            makeNuke(this.nukeQueue.get(0).get(0), this.nukeQueue.get(0).get(1));
-            this.nukeQueue.remove(0);
-        }
-
         resetMoved();
     }
 
@@ -194,6 +191,17 @@ public class MapDatabase {
         }
     }
 
+
+    public void spawnEvents() {
+        for (int i = 0; i < eventQueue.size(); i ++) {
+            if (currentEvent.equals("Nuke")) {
+                makeNuke(this.eventQueue.get(0).get(0), this.eventQueue.get(0).get(1));
+            } else {
+                movableBomb(this.eventQueue.get(0).get(0), this.eventQueue.get(0).get(1));
+            }
+            this.eventQueue.remove(0);
+        }
+    }
     public void makeNuke(int x, int y) {
         int intRadius = (int) Math.ceil(radius);
         for (int i = y - intRadius; i < y + intRadius; i ++) {
@@ -210,6 +218,33 @@ public class MapDatabase {
         }
     }
 
+    public void movableBomb(int x, int y) {
+        int intRadius = (int) Math.ceil(radius);
+        for (int i = y - intRadius; i < y + intRadius; i ++) {
+            for (int j = x - intRadius; j < x + intRadius; j ++) {
+                if ((inBounds(j, i))) {
+                    double distance = Math.sqrt((Math.pow((j - x), 2) + (Math.pow((i - y), 2))));
+                    if ((distance <= radius) && (Math.random() <= 0.25)) {
+                        if (currentEvent.equals("Baby Bomb")) {
+                            map[i][j] = new Human(j, i);
+                        } else {
+                            map[i][j] = new Zombie(j, i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void changeEvent() {
+        if (this.currentEvent.equals("Nuke")) {
+            this.currentEvent = "Baby Bomb";
+        } else if (this.currentEvent.equals("Baby Bomb")) {
+            this.currentEvent = "Zombie Bomb";
+        } else {
+            this.currentEvent = "Nuke";
+        }
+    }
     public boolean inBounds(int x, int y) {
         return ((y < map.length) && (y >= 0) && (x < map[0].length) && (x >= 0));
     }
@@ -218,8 +253,8 @@ public class MapDatabase {
         return map;
     }
 
-    public ArrayList<ArrayList<Integer>> getNukeQueue() {
-        return nukeQueue;
+    public ArrayList<ArrayList<Integer>> getEventQueue() {
+        return eventQueue;
     }
 
     public int getTotalHumans() {
@@ -228,6 +263,10 @@ public class MapDatabase {
 
     public int getTotalZombies() {
         return totalZombies;
+    }
+
+    public String getCurrentEvent() {
+        return currentEvent;
     }
 
     public void resetMoved() {

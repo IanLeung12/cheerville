@@ -10,8 +10,6 @@ class Human extends Movable {
 
     private int timePregnant = 0;
 
-    boolean rapid;
-
     Human(int x, int y) {
         super(x, y, 2);
         this.hunger = 0;
@@ -20,7 +18,6 @@ class Human extends Movable {
         } else {
             this.gender = "male";
         }
-        this.rapid = rapid;
     }
 
     public int[] move(Tile[][] sight) {

@@ -15,7 +15,7 @@ class Main {
         MapDatabase map;
 
         int sidelength = input.nextInt();
-        int delay = 5;
+        int delay = 10;
         if (sidelength == -1) {
             map = new MapDatabase(250, 750, 375, 0.05, 50) ;
         } else{
@@ -51,6 +51,7 @@ class Main {
 
             map.growGrass();
             map.moveAll();
+            map.spawnEvents();
             map.countMovables();
 
             //Display the grid on a Panel
