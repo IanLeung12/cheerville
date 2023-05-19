@@ -17,7 +17,6 @@ abstract class Movable extends Tile{
     Movable(int x, int y, int sight) {
         super(x, y);
         this.sight = sight;
-        this.setAge(0);
         this.health = 100;
         this.moved = false;
     }
@@ -25,7 +24,6 @@ abstract class Movable extends Tile{
     Movable(int x, int y, int sight, int health) {
         super(x, y);
         this.sight = sight;
-        this.setAge(0);
         this.health = 100;
     }
 

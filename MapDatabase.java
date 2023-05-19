@@ -5,17 +5,20 @@ public class MapDatabase {
 
     private final double grassGrowRate;
 
-    private double radius;
+    private final double radius;
+
+    private ArrayList<ArrayList<Integer>> nukeQueue;
+
     MapDatabase(int sideLength, int humans, int zombies, double grassGrowRate, double radius) {
 
         this.radius = radius;
         this.map = new Tile[sideLength][sideLength];
-
+        this.nukeQueue = new ArrayList<ArrayList<Integer>>();
         this.grassGrowRate = grassGrowRate;
 
         for (int i = 0; i < map.length; i ++) {
             for (int j = 0; j < map[i].length; j ++) {
-                map[i][j] = new Empty(j, i);
+                map[i][j] = new Ground(j, i);
             }
         }
         int x;
@@ -24,7 +27,7 @@ public class MapDatabase {
         do {
             x = (int) (Math.random() * (sideLength));
             y = (int) (Math.random() * (sideLength));
-            if (map[y][x] instanceof Empty) {
+            if (map[y][x] instanceof Ground) {
                 map[y][x] = new Human(x, y);
                 humans --;
             }
@@ -33,7 +36,7 @@ public class MapDatabase {
         do {
             x = (int) (Math.random() * (sideLength));
             y = (int) (Math.random() * (sideLength));
-            if (map[y][x] instanceof Empty) {
+            if (map[y][x] instanceof Ground) {
                 map[y][x] = new Zombie(x, y);
                 zombies --;
             }
@@ -43,7 +46,7 @@ public class MapDatabase {
     public void growGrass() {
         for (int i = 0; i < map.length; i ++) {
             for (int j = 0; j < map.length; j ++) {
-                if (map[i][j] instanceof Empty) {
+                if (map[i][j] instanceof Ground) {
                     if (Math.random() <= grassGrowRate) {
                         map[i][j] = new Grass(j, i);
                     }
@@ -59,7 +62,7 @@ public class MapDatabase {
                 map[i][j].age();
                 if (map[i][j] instanceof Movable) {
                     if (((Movable) map[i][j]).getHealth() <= 0) {
-                        map[i][j] = new Empty(j, i);
+                        map[i][j] = new Ground(j, i);
                     } else if (!((Movable) map[i][j]).isMoved()){
                         ((Movable) map[i][j]).setMoved(true);
                         int sightDistance = ((Movable) map[i][j]).getSight();
@@ -89,7 +92,7 @@ public class MapDatabase {
                                     breed((Human) map[targetY][targetX], (Human) map[i][j]);
                                 } else {
                                     map[targetY][targetX] = map[i][j];
-                                    map[i][j] = new Empty(j, i);
+                                    map[i][j] = new Ground(j, i);
                                     if (((Human) map[targetY][targetX]).getTimePregnant() >= 2) {
                                         birth((Human) (map[targetY][targetX]));
                                     }
@@ -100,7 +103,7 @@ public class MapDatabase {
 
                             } else {
                                 map[targetY][targetX] = map[i][j];
-                                map[i][j] = new Empty(j, i);
+                                map[i][j] = new Ground(j, i);
                             }
 
                         }
@@ -109,14 +112,19 @@ public class MapDatabase {
                     }
                 } else if (map[i][j] instanceof Grass) {
                     if (map[i][j].getAge() > ((Grass) map[i][j]).getMaxAge()) {
-                        map[i][j] = new Empty(j, i);
+                        map[i][j] = new Ground(j, i);
                     }
                 } else if (map[i][j] instanceof Nuke) {
                     if (map[i][j].getAge() > ((Nuke) map[i][j]).getMaxAge()) {
-                        map[i][j] = new Empty(j, i);
+                        map[i][j] = new Ground(j, i);
                     }
                 }
             }
+        }
+
+        for (int i = 0; i < nukeQueue.size(); i ++) {
+            makeNuke(this.nukeQueue.get(0).get(0), this.nukeQueue.get(0).get(1));
+            this.nukeQueue.remove(0);
         }
 
         resetMoved();
@@ -141,7 +149,7 @@ public class MapDatabase {
         for (int i = mother.getY() - 1; i <= mother.getY() + 1; i ++) {
             for (int j = mother.getX() - 1; j <= mother.getX() + 1; j ++) {
                 if (inBounds(j, i)) {
-                    if ((map[i][j] instanceof Empty) || (map[i][j] instanceof Grass)) {
+                    if ((map[i][j] instanceof Ground) || (map[i][j] instanceof Grass)) {
                         babySpots.add(map[i][j]);
                     }
                 }
@@ -161,7 +169,7 @@ public class MapDatabase {
             if (zombie.getHealth() < 100) {
                 zombie.setHealth(zombie.getHealth() + ((Human) map[y][x]).getHealth());
             }
-            map[y][x] = new Empty(x, y);
+            map[y][x] = new Ground(x, y);
 
         } else {
             map[y][x] = new Zombie(x, y, ((Movable) map[y][x]).getHealth());
@@ -194,6 +202,14 @@ public class MapDatabase {
 
     public void setMap(Tile[][] map) {
         this.map = map;
+    }
+
+    public ArrayList<ArrayList<Integer>> getNukeQueue() {
+        return nukeQueue;
+    }
+
+    public void setNukeQueue(ArrayList<ArrayList<Integer>> nukeQueue) {
+        this.nukeQueue = nukeQueue;
     }
 
     public void resetMoved() {

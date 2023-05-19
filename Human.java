@@ -43,7 +43,7 @@ class Human extends Movable {
                     bestChoice = "grass";
 
                 } else if ((sight[i][j] instanceof Human) && (!bestChoice.equals("grass"))) {
-                    if (getConsent((Human) (sight[i][j]))) {
+                    if (compatible((Human) (sight[i][j]))) {
                         distance = Math.sqrt((Math.pow((j - radius), 2)) + (Math.pow((i - radius), 2)));
                         bestChoice = "human";
                         if (distance < bestDistance) {
@@ -62,7 +62,7 @@ class Human extends Movable {
                 bestX = (int) (Math.random() * sight.length);
                 bestY = (int) (Math.random() * sight.length);
                 counter++;
-            } while (!(sight[bestY][bestX] instanceof Empty) && !(sight[bestY][bestX] instanceof Grass) && (counter < 12));
+            } while (!(sight[bestY][bestX] instanceof Ground) && !(sight[bestY][bestX] instanceof Grass) && (counter < 12));
             if (counter >= 12) {
                 bestX = 0;
                 bestY = 0;
@@ -105,8 +105,8 @@ class Human extends Movable {
 
     }
 
-    public boolean getConsent(Human partner) {
-        return (!(partner.getGender().equals(this.gender) && ((rapid) || (this.getAge() > 4)) && (partner.getAge() > 4) && !(this.pregnant) && !(partner.isPregnant()) && (partner.getHunger() <= 50)));
+    public boolean compatible(Human partner) {
+        return (!(partner.getGender().equals(this.gender) && (this.getAge() > 4) && (partner.getAge() > 4) && !(this.pregnant) && !(partner.isPregnant()) && (partner.getHunger() <= 50)));
     }
 
 

@@ -3,8 +3,11 @@ import javax.swing.JPanel;
 import java.awt.Toolkit;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 /* [MatrixDisplayWithMouse.java]
  * A small program showing how to use the MatrixDisplayWithMouse class
@@ -58,21 +61,26 @@ class MatrixDisplayWithMouse extends JFrame {
             g.setColor(Color.BLACK);
             g.drawOval(50, 50, 50, 50);
 
+            g.drawString("Humans", 1400, 300);
+
 
             for(int i = 0; i < matrix.length; i ++)  {
                 for(int j = 0; j < matrix[i].length; j ++)  {
                     Tile spot = matrix[i][j];
 
-                    if (spot instanceof Empty)
+                    if (spot instanceof Ground)
                         g.setColor(Color.LIGHT_GRAY);
                     else if (spot instanceof Zombie)    //This block can be changed to match character-color pairs
                         g.setColor(Color.RED);
                     else if (spot instanceof Human)
-                        if (spot.getAge() > 4) {
+                        if (spot.getAge() <= 4) {
+                            g.setColor(Color.YELLOW);
+                        } else if (((Human) spot).getGender().equals("male")) {
                             g.setColor(Color.BLUE);
                         } else {
-                            g.setColor(Color.YELLOW);
+                            g.setColor(Color.MAGENTA);
                         }
+
                     else if (spot instanceof Nuke)
                         g.setColor(((Nuke) spot).getColor());
                     else
@@ -95,7 +103,9 @@ class MatrixDisplayWithMouse extends JFrame {
         public void mousePressed(MouseEvent e) {
             System.out.println("Mouse pressed; # of clicks: " + e.getClickCount());
             System.out.println("x: " + e.getPoint().x + ",y: " + e.getPoint().y);
-            map.makeNuke((e.getPoint().x / GridToScreenRatio), (e.getPoint().y / GridToScreenRatio));
+            map.getNukeQueue().add(new ArrayList<Integer>());
+            map.getNukeQueue().get(map.getNukeQueue().size() - 1).add((e.getPoint().x / GridToScreenRatio));
+            map.getNukeQueue().get(map.getNukeQueue().size() - 1).add((e.getPoint().y / GridToScreenRatio));
 
         }
 
@@ -115,6 +125,24 @@ class MatrixDisplayWithMouse extends JFrame {
             System.out.println("Mouse clicked (# of clicks: "+ e.getClickCount() + ")");
         }
 
+    }
+
+    class MatrixPanelKeyListener implements KeyListener {
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
     }
 
 }
